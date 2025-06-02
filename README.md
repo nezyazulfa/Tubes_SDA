@@ -65,4 +65,4 @@ Proyek ini dibuat untuk tujuan akademik dalam mata kuliah **Struktur Data dan Al
 
 ---
 
-📌 **Repository GitHub**: [Paper Citation Manager](https://github.com/wyandhanupapoy/Paper-Citation-Manager)
+📌 **Repository GitHub**: [Paper Citation Manager](https://github.com/nezyazulfa/Tubes_SDA.git)
