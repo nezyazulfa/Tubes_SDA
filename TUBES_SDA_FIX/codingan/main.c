@@ -27,9 +27,9 @@ void clearScreen() {
 int main() {
     // Tidak ada lagi SetConsoleOutputCP(CP_UTF8);
 
-    Node *paperList = loadDataFromFile("../dataset/data.txt"); 
+    Node *paperList = loadDataFromFile("TUBES_SDA_FIX/dataset/data.txt"); 
     if (!paperList) {
-        printf("GAGAL MEMUAT DATA: Tidak ada data atau gagal memuat dari '../dataset/data.txt'.\n");
+        printf("GAGAL MEMUAT DATA: Tidak ada data atau gagal memuat dari 'TUBES_SDA_FIX/dataset/data.txt'.\n");
         printf("Pastikan file ada, formatnya benar, dan path sesuai.\n");
         printf("Program akan keluar.\n");
         return 1;
