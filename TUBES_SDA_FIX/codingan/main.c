@@ -1,294 +1,270 @@
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <string.h>
-    // Tidak perlu #include <windows.h> jika kita tidak menggunakan SetConsoleOutputCP
+// src/main.c
 
-    #include "../include/sll.h"
-    #include "../include/dll.h"
-    #include "../include/tree.h"
-    #include "../include/stack.h"
-    #include "../include/queue.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../include/sll.h"
+#include "../include/dll.h"
+#include "../include/tree.h"
+#include "../include/stack.h"
+#include "../include/queue.h"
 
-    // Fungsi untuk membersihkan buffer input
-    void clearInputBuffer() {
-        int c;
-        while ((c = getchar()) != '\n' && c != EOF);
+// Fungsi untuk membersihkan buffer input setelah scanf.
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// Fungsi untuk membersihkan layar konsol (cross-platform).
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+int main() {
+    // GANTI PATH INI SESUAI LOKASI data.txt DI KOMPUTER ANDA
+    Node* paperList = loadDataFromFile("data.txt");
+    if (!paperList) {
+        printf("GAGAL MEMUAT DATA. Pastikan file 'data.txt' ada di direktori yang sama.\n");
+        return 1;
     }
 
-    // Fungsi untuk membersihkan layar konsol
-    void clearScreen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-    }
+    // Inisialisasi struktur data lain
+    StackNode* bookmarkStack = NULL;
+    Queue citationQueue;
+    initQueue(&citationQueue);
 
-    int main() {
-        // Tidak ada lagi SetConsoleOutputCP(CP_UTF8);
+    int choice;
+    char id[100]; // ID kembali menjadi string
 
-        Node *paperList = loadDataFromFile("TUBES_SDA_FIX/dataset/data.txt"); 
-        if (!paperList) {
-            printf("GAGAL MEMUAT DATA: Tidak ada data atau gagal memuat dari 'TUBES_SDA_FIX/dataset/data.txt'.\n");
-            printf("Pastikan file ada, formatnya benar, dan path sesuai.\n");
-            printf("Program akan keluar.\n");
-            return 1;
-        }
+    // Main loop program
+    while (1) {
+        clearScreen();
+        printf("+=================================================================+\n");
+        printf("|              SISTEM REFERENSI & MANAJEMEN PAPER                 |\n");
+        printf("+=================================================================+\n\n");
+        
+        printf("  +---------------------------------+\n");
+        printf("  |  Pencarian & Rekomendasi        |\n");
+        printf("  +---------------------------------+\n");
+        printf("  | [1] Cari Paper Berdasarkan ID   |    ---- Single Linked List\n");
+        printf("  | [2] Rekomendasi Paper (Sitasi)  |    ---- Queue\n");
+        printf("  +---------------------------------+\n\n");
+        printf("  +---------------------------------+\n");
+        printf("  |  Eksplorasi Lanjutan            |\n");
+        printf("  +---------------------------------+\n");
+        printf("  | [3] Visualisasi Tree            |    ---- Tree\n");
+        printf("  +---------------------------------+\n\n");
+        printf("  +---------------------------------+\n");
+        printf("  |  Manajemen Bookmark             |\n");
+        printf("  +---------------------------------+\n");
+        printf("  | [4] Tambah Paper ke Bookmark    |    ---- Stack\n");
+        printf("  | [5] Tampilkan Daftar Bookmark   |    ---- Stack\n");
+        printf("  | [6] Simpan Bookmark ke File     |    ---- Stack\n");
+        printf("  +---------------------------------+\n\n");
+        printf("  +---------------------------------+\n");
+        printf("  |  Tampilan Daftar Keseluruhan    |\n");
+        printf("  +---------------------------------+\n");
+        printf("  | [7] Tampilkan Semua (Urutan Asli)|    ---- Single Linked List\n");
+        printf("  | [8] Tampilkan Semua (Urut Tahun)|    ---- Double Linked List\n");
+        printf("  +---------------------------------+\n\n");
+        printf("  +---------------------------------+\n");
+        printf("  |  Lain-lain                      |\n");
+        printf("  +---------------------------------+\n");
+        printf("  | [9] Keluar dari Program         |\n");
+        printf("  +---------------------------------+\n\n");
+                
+        printf("  >> Masukkan Pilihan Anda [1-9]: ");
 
-        StackNode *bookmarkStack = NULL;
-        Queue citationQueue;
-        initQueue(&citationQueue);
-
-        int choice;
-        char id[1000];
-
-        while (1) {
-            clearScreen(); 
-            printf("+=================================================================+\n");
-            printf("|              SISTEM REFERENSI & MANAJEMEN PAPER                 |\n");
-            printf("+=================================================================+\n\n");
-            
-            printf("  +---------------------------------+\n");
-            printf("  |  Pencarian & Rekomendasi        |\n");
-            printf("  +---------------------------------+\n");
-            printf("  | [1] Cari Paper Berdasarkan ID   |    ---- Single Linked List\n");
-            printf("  | [2] Rekomendasi Paper (Sitasi)  |    ---- Queue\n");
-            printf("  +---------------------------------+\n\n");
-
-            printf("  +---------------------------------+\n");
-            printf("  |  Eksplorasi Lanjutan            |\n");
-            printf("  +---------------------------------+\n");
-            printf("  | [3] Visualisasi Tree            |    ---- Tree\n");
-            printf("  +---------------------------------+\n\n");
-
-            printf("  +---------------------------------+\n");
-            printf("  |  Manajemen Bookmark             |\n");
-            printf("  +---------------------------------+\n");
-            printf("  | [4] Tambah Paper ke Bookmark    |    ---- Stack\n");
-            printf("  | [5] Tampilkan Daftar Bookmark   |    ---- Stack\n");
-            printf("  | [6] Simpan Bookmark ke File     |    ---- Stack\n");
-            printf("  +---------------------------------+\n\n");
-
-            printf("  +---------------------------------+\n");
-            printf("  |  Tampilan Daftar Keseluruhan    |\n");
-            printf("  +---------------------------------+\n");
-            printf("  | [7] Tampilkan Semua (Urutan Asli)|    ---- Single Linked List\n");
-            printf("  | [8] Tampilkan Semua (Urut Tahun)|    ---- Double Linked List\n");
-            printf("  +---------------------------------+\n\n");
-
-            printf("  +---------------------------------+\n");
-            printf("  |  Lain-lain                      |\n");
-            printf("  +---------------------------------+\n");
-            printf("  | [9] Keluar dari Program         |\n");
-            printf("  +---------------------------------+\n\n");
-            
-            printf("  >> Masukkan Pilihan Anda [1-9]: ");
-
-            if (scanf("%d", &choice) != 1) {
-                printf("\n  [ERROR] Input tidak valid. Harap masukkan angka pilihan menu (1-9).\n");
-                clearInputBuffer();
-                printf("  Tekan Enter untuk melanjutkan...");
-                getchar(); 
-                continue;
-            }
+        if (scanf("%d", &choice) != 1) {
+            printf("\n  [ERROR] Input tidak valid. Harap masukkan angka.\n");
             clearInputBuffer();
+            printf("  Tekan Enter untuk melanjutkan...");
+            getchar();
+            continue;
+        }
+        clearInputBuffer();
 
-            switch (choice) {
-            case 1: // Cari Paper Berdasarkan ID
+        switch (choice) {
+            case 1:
                 printf("\n  **** CARI PAPER BERDASARKAN ID ****\n\n");
                 printf("  Masukkan ID paper yang dicari: ");
-                scanf("%999s", id); 
+                scanf("%99s", id); // Baca ID sebagai string
                 clearInputBuffer();
                 {
-                    Node *found = searchPaperById(paperList, id);
+                    Node* found = searchPaperById(paperList, id);
                     if (found) {
-                        printf("\n  --- Paper Ditemukan ---\n");
-                        printf("    ID           : %999s\n", found->data.id);
-                        printf("    Judul        : %999s\n", found->data.title);
-                        printf("    Mensitasi ID : %999s\n", found->data.incitation);
-                        printf("    Author       : %999s\n", found->data.author);
+                        printf("\n  --- Detail Lengkap Paper ---\n");
+                        printf("    ID           : %s\n", found->data.id);
+                        printf("    Judul        : %s\n", found->data.title);
+                        printf("    Mensitasi ID : %s\n", found->data.incitation);
+                        printf("    Author       : %s\n", found->data.author);
                         printf("    Tahun        : %d\n", found->data.year);
-                        printf("  ------------------------\n");
+                        printf("  -----------------------------\n");
                     } else {
-                        printf("\n  [INFO] Paper dengan ID '%999s' tidak ditemukan.\n", id);
+                        printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", id);
                     }
                 }
                 break;
-            case 2: // Rekomendasi paper
+
+            case 2:
             {
                 printf("\n  **** REKOMENDASI PAPER (SITASI) ****\n\n");
-                freeQueue(&citationQueue); 
-                initQueue(&citationQueue); 
-
-                char targetId[1000];
+                freeQueue(&citationQueue); // Kosongkan antrean sebelumnya
+                initQueue(&citationQueue);
+                
+                char targetId[100];
                 printf("  Masukkan ID paper basis rekomendasi: ");
-                if (scanf("%999s", targetId) != 1) { 
-                    printf("\n  [ERROR] Input ID tidak valid.\n");
-                    clearInputBuffer();
-                    break;
-                }
-                clearInputBuffer(); 
+                scanf("%99s", targetId);
+                clearInputBuffer();
 
-                Node *sourcePaper = searchPaperById(paperList, targetId);
+                Node* sourcePaper = searchPaperById(paperList, targetId);
                 if (!sourcePaper) {
-                    printf("\n  [INFO] Paper dengan ID '%999s' tidak ditemukan sebagai basis rekomendasi.\n", targetId);
+                    printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", targetId);
                     break;
                 }
+                
+                printf("\n  Paper Basis: [%s] ", sourcePaper->data.id);
+                print_truncated(sourcePaper->data.title, 60);
+                printf("\n  Mencari paper lain yang mensitasi paper ini...\n");
 
-                printf("\n  Paper Basis: [%999s] %999s\n", sourcePaper->data.id, sourcePaper->data.title);
-                printf("  Mencari paper lain yang mensitasi paper ini...\n");
-
-                Node *currentPaperInList = paperList;
+                Node* currentPaperInList = paperList;
                 int recommendationsFound = 0;
                 while (currentPaperInList) {
+                    // Cari paper yang mensitasi targetId
                     if (strcmp(currentPaperInList->data.incitation, targetId) == 0) {
-                        if (strcmp(currentPaperInList->data.id, targetId) != 0) {
+                         // Pastikan tidak merekomendasikan paper itu sendiri
+                         if (strcmp(currentPaperInList->data.id, targetId) != 0) {
                             enqueue(&citationQueue, currentPaperInList->data);
                             recommendationsFound++;
-                        }
+                         }
                     }
                     currentPaperInList = currentPaperInList->next;
                 }
-
-                if (recommendationsFound == 0) {
-                    printf("\n  [INFO] Tidak ada paper lain yang ditemukan mensitasi '%999s' (%999s).\n", sourcePaper->data.title, sourcePaper->data.id);
-                    break; 
-                }
-
-                printf("\n  Ditemukan %d paper yang mensitasi '%999s'. Menampilkan satu per satu:\n", recommendationsFound, sourcePaper->data.title);
-
-                char nextChoiceChar;
-                do {
-                    if (citationQueue.front == NULL) { 
-                        printf("\n  -- Tidak ada rekomendasi lagi untuk ditampilkan --\n");
-                        break;
-                    }
-
-                    Paper recommendedPaper = dequeue(&citationQueue);
-                    printf("\n  +-- Rekomendasi Berikutnya -----------+\n");
-                    printf("  | ID           : %999s\n", recommendedPaper.id);
-                    printf("  | Judul        : %999s\n", recommendedPaper.title);
-                    printf("  | Author       : %999s\n", recommendedPaper.author);
-                    printf("  | Tahun        : %d\n", recommendedPaper.year);
-                    printf("  | (Mensitasi ID: %999s)\n", recommendedPaper.incitation);
-                    printf("  +------------------------------------+\n");
-
-
-                    if (citationQueue.front == NULL) { 
-                        printf("\n  -- Ini adalah rekomendasi terakhir --\n");
-                        break;
-                    }
-
-                    printf("\n  [N] Next | [Lainnya] Kembali ke Menu : ");
-                    scanf(" %c", &nextChoiceChar); 
-                    clearInputBuffer(); 
-
-                } while (nextChoiceChar == 'n' || nextChoiceChar == 'N');
                 
-                if(citationQueue.front != NULL){
-                    freeQueue(&citationQueue);
-                    initQueue(&citationQueue); 
+                if (recommendationsFound == 0) {
+                     printf("\n  [INFO] Tidak ada paper lain yang ditemukan mensitasi paper ini.\n");
+                     break;
                 }
-                printf("\n  Selesai menampilkan rekomendasi.\n");
+
+                 printf("\n  Ditemukan %d paper. Menampilkan satu per satu:\n", recommendationsFound);
+                 char nextChoiceChar;
+                 do {
+                     if (citationQueue.front == NULL) {
+                         printf("\n  -- Tidak ada rekomendasi lagi --\n");
+                         break;
+                     }
+                     Paper recommendedPaper = dequeue(&citationQueue);
+                     printf("\n  +-- Rekomendasi Berikutnya --+\n");
+                     printf("  | ID      : %s\n", recommendedPaper.id);
+                     printf("  | Judul   : ");
+                     print_truncated(recommendedPaper.title, 60);
+                     printf("\n");
+                     printf("  | Tahun   : %d\n", recommendedPaper.year);
+                     printf("  +----------------------------+\n");
+
+                     if (citationQueue.front == NULL) {
+                         printf("\n  -- Ini adalah rekomendasi terakhir --\n");
+                         break;
+                     }
+                     printf("\n  [N] Next | [Lainnya] Kembali ke Menu : ");
+                     scanf(" %c", &nextChoiceChar);
+                     clearInputBuffer();
+                 } while (nextChoiceChar == 'n' || nextChoiceChar == 'N');
             }
             break;
-            case 3: // Visualisasi Tree
-        {
-            printf("\n  **** VISUALISASI JEJARING SITASI (POHON) ****\n\n");
-            if (!paperList) {
-                printf("  [INFO] Daftar paper kosong, tidak bisa membangun tree.\n");
+
+            case 3:
+                printf("\n  **** VISUALISASI JEJARING SITASI (POHON) ****\n\n");
+                if (!paperList) {
+                    printf("  [INFO] Daftar paper kosong.\n");
+                    break;
+                }
+                printf("  Membangun dan menampilkan struktur pohon, mohon tunggu...\n");
+                TreeNode* citationTreeRoot = buildCitationTree(paperList);
+                printTreeVisual(citationTreeRoot);
+                freeTree(citationTreeRoot);
                 break;
-            }
-            printf("  Membangun struktur pohon sitasi, mohon tunggu...\n");
-            // Panggilan ini TIDAK PERLU DIUBAH
-            TreeNode* citationTreeRoot = buildCitationTree(paperList); 
-            if (!citationTreeRoot) {
-                printf("  [INFO] Gagal membangun pohon sitasi atau tidak ada data root.\n");
-                break;
-            }
-            printTreeVisual(citationTreeRoot, 0); 
-            freeTree(citationTreeRoot); 
-        }
-        break;
-            case 4: // Tambah Bookmark paper
+
+            case 4:
                 printf("\n  **** TAMBAH PAPER KE BOOKMARK ****\n\n");
                 printf("  Masukkan ID paper yang ingin dibookmark: ");
-                scanf("%999s", id);
+                scanf("%99s", id);
                 clearInputBuffer();
                 {
-                    Node *found = searchPaperById(paperList, id);
+                    Node* found = searchPaperById(paperList, id);
                     if (found) {
-                        push(&bookmarkStack, found->data); 
-                        printf("\n  [OK] Paper '%999s' (%999s) berhasil dibookmark!\n", found->data.title, found->data.id);
+                        push(&bookmarkStack, found->data);
+                        printf("\n  [OK] Paper '[%s]' berhasil dibookmark!\n", found->data.id);
                     } else {
-                        printf("\n  [INFO] Paper dengan ID '%999s' tidak ditemukan untuk dibookmark.\n", id);
+                        printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", id);
                     }
                 }
                 break;
-            case 5: // Tampilkan bookmark
-                // printBookmarks di stack.c akan diubah untuk tampilan ASCII
+
+            case 5:
                 printBookmarks(bookmarkStack);
                 break;
-            case 6: // Simpan bookmark ke file
+
+            case 6:
                 printf("\n  **** SIMPAN BOOKMARK KE FILE ****\n\n");
-                saveBookmarksToFile(bookmarkStack, "../dataset/bookmark.txt"); 
+                saveBookmarksToFile(bookmarkStack, "bookmark.txt");
                 break;
-            case 7: // Tampilkan semua paper (Urutan Asli)
-                // printAllPapers di sll.c akan diubah untuk tampilan ASCII
+
+            case 7:
                 printAllPapers(paperList);
                 break;
-            case 8: // Tampilkan Semua Paper (Terurut Berdasarkan Tahun)
+            
+            case 8:
             {
                 printf("\n  **** TAMPILKAN SEMUA PAPER (URUT TAHUN) ****\n\n");
                 DNode *dllList = convertSLLtoDLL(paperList);
                 if (!dllList) {
-                    printf("  [INFO] Gagal mengkonversi ke DLL (list SLL kosong atau memori penuh).\n");
+                    printf("  [INFO] Gagal mengkonversi ke DLL.\n");
                     break;
                 }
                 int sort_order_choice;
-                printf("  Pilih urutan tahun (1 = Ascending/Terlama dulu, 0 = Descending/Terbaru dulu): ");
+                printf("  Pilih urutan tahun (1 = Ascending/Terlama, Lainnya = Descending/Terbaru): ");
                 if (scanf("%d", &sort_order_choice) != 1) {
-                    printf("\n  [ERROR] Input urutan tidak valid.\n");
+                    printf("\n  [ERROR] Input tidak valid.\n");
                     clearInputBuffer();
-                    freeDLL(dllList); 
+                    freeDLL(dllList);
                     break;
                 }
                 clearInputBuffer();
 
-                sortDLLByYear(&dllList, 1); 
-
-                // printDLL dan printDLLBackward di dll.c akan diubah untuk ASCII
-                if (sort_order_choice == 1) { 
+                if (sort_order_choice == 1) {
+                    sortDLLByYear(&dllList, 1); // Sort ascending
                     printDLL(dllList);
-                } else { 
+                } else {
+                    sortDLLByYear(&dllList, 0); // Sort descending
                     DNode *tail = dllList;
-                    if (tail) { 
-                        while (tail->next) { 
-                            tail = tail->next;
-                        }
-                        printDLLBackward(tail); 
-                    } else {
-                        printf("\n  [INFO] List kosong, tidak ada yang bisa ditampilkan setelah diurutkan.\n");
-                    }
+                    if(tail) { while(tail->next) tail = tail->next; } // Find the new tail
+                    printDLLBackward(tail);
                 }
-                freeDLL(dllList); 
+                freeDLL(dllList);
             }
             break;
-            case 9: // Keluar
+            
+            case 9:
                 printf("\n  Membersihkan memori sebelum keluar...\n");
                 freeList(paperList);
                 freeStack(bookmarkStack);
                 freeQueue(&citationQueue);
-                printf("  Terima kasih telah menggunakan program ini. Sampai jumpa!\n\n");
+                printf("  Terima kasih telah menggunakan program ini!\n\n");
                 return 0;
-            default:
-                printf("\n  [ERROR] Pilihan tidak valid. Silakan pilih nomor menu yang tersedia (1-9).\n");
-            }
 
-            if (choice != 9) { 
-                printf("\n  Tekan Enter untuk kembali ke Menu Utama...");
-                getchar(); 
-            }
+            default:
+                printf("\n  [ERROR] Pilihan tidak valid.\n");
         }
-        return 0; 
+
+        if (choice != 9) {
+            printf("\n\n  Tekan Enter untuk kembali ke Menu Utama...");
+            getchar();
+        }
     }
+    return 0;
+}

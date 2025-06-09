@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 from datasets import load_dataset
 
-def generate_correct_single_root_dataset(max_papers=1000):
+def generate_correct_single_root_dataset(max_papers=10000):
     """
     Finds a highly-cited paper, collects its descendants, correctly maps
     their internal parent-child relationships, and saves the data to ensure
@@ -115,4 +115,4 @@ def generate_correct_single_root_dataset(max_papers=1000):
         print(f"Gagal menulis ke file: {e}")
 
 if __name__ == "__main__":
-    generate_correct_single_root_dataset(max_papers=1000)
+    generate_correct_single_root_dataset(max_papers=10000)

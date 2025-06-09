@@ -1,9 +1,18 @@
+// src/dll.c
+
+/*
+ * File ini mengimplementasikan logika Doubly Linked List (DLL).
+ * Digunakan secara spesifik untuk fitur pengurutan paper berdasarkan tahun,
+ * karena DLL memudahkan traversal maju (ascending) dan mundur (descending).
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/dll.h"
 
+// Fungsi internal untuk membuat DNode baru.
 DNode* createDNode(Paper data) {
-    DNode* newNode = (DNode*) malloc(sizeof(DNode));
+    DNode* newNode = (DNode*)malloc(sizeof(DNode));
     if (newNode) {
         newNode->data = data;
         newNode->prev = newNode->next = NULL;
@@ -11,10 +20,10 @@ DNode* createDNode(Paper data) {
     return newNode;
 }
 
+// Mengonversi seluruh SLL menjadi DLL.
 DNode* convertSLLtoDLL(Node* sllHead) {
     DNode* dllHead = NULL;
     DNode* dllTail = NULL;
-
     while (sllHead) {
         DNode* newNode = createDNode(sllHead->data);
         if (!dllHead) {
@@ -29,20 +38,34 @@ DNode* convertSLLtoDLL(Node* sllHead) {
     return dllHead;
 }
 
-void sortDLLByYear(DNode** headRef, int terkecil_terbesar) {
+/*
+ * =====================================================================================
+ * Penjelasan Fungsi sortDLLByYear
+ * =====================================================================================
+ * Fungsi ini mengurutkan DLL menggunakan algoritma Bubble Sort.
+ *
+ * Mengapa Bubble Sort? Bubble Sort dipilih karena implementasinya yang sederhana
+ * dan mudah dipahami, cocok untuk tujuan pembelajaran. Ia bekerja dengan cara
+ * berulang kali menukar elemen yang bersebelahan jika urutannya salah.
+ *
+ * Kompleksitas Waktu: O(n^2), yang tidak efisien untuk dataset besar.
+ * Untuk dataset yang sangat besar, algoritma yang lebih canggih seperti Merge Sort
+ * (O(n log n)) akan jauh lebih cepat, namun implementasinya lebih kompleks.
+ * =====================================================================================
+ */
+void sortDLLByYear(DNode** headRef, int ascending) {
     if (!headRef || !(*headRef)) return;
-
     int swapped;
     DNode* ptr;
     DNode* lptr = NULL;
-
     do {
         swapped = 0;
         ptr = *headRef;
-
         while (ptr->next != lptr) {
-            int compare = terkecil_terbesar ? (ptr->data.year > ptr->next->data.year) : (ptr->data.year < ptr->next->data.year);
-            if (compare) {
+            // Logika perbandingan diubah berdasarkan parameter 'ascending'
+            int condition = ascending ? (ptr->data.year > ptr->next->data.year)
+                                      : (ptr->data.year < ptr->next->data.year);
+            if (condition) {
                 Paper temp = ptr->data;
                 ptr->data = ptr->next->data;
                 ptr->next->data = temp;
@@ -54,23 +77,25 @@ void sortDLLByYear(DNode** headRef, int terkecil_terbesar) {
     } while (swapped);
 }
 
-// Helper di dll.c (versi ASCII)
+// Fungsi helper untuk mencetak detail satu paper, agar tidak duplikasi kode.
 void printPaperDetailsDLL(Paper data, int* count) {
-    if (count) {
-        printf("\n  --- Paper %d ---\n", (*count)++);
-    } else {
-        printf("\n  ---------------\n");
-    }
+    printf("\n  --- Paper (%d) ---\n", *count);
     printf("    ID           : %s\n", data.id);
-    printf("    Judul        : %s\n", data.title);
+    printf("    Judul        : ");
+    print_truncated(data.title, 60);
+    printf("\n");
     printf("    Mensitasi ID : %s\n", data.incitation);
-    printf("    Author       : %s\n", data.author);
+    printf("    Author       : ");
+    print_truncated(data.author, 60);
+    printf("\n");
     printf("    Tahun        : %d\n", data.year);
+    (*count)++;
 }
 
+// Menampilkan DLL dari head ke tail (Ascending).
 void printDLL(DNode* head) {
     if (!head) {
-        printf("\n  [INFO] List DLL kosong untuk ditampilkan (Urutan Ascending).\n");
+        printf("\n  [INFO] List kosong untuk ditampilkan.\n");
         return;
     }
     printf("\n  +----------------------------------------------------+\n");
@@ -85,9 +110,10 @@ void printDLL(DNode* head) {
     printf("\n  -- Akhir Daftar (Ascending) --\n");
 }
 
+// Menampilkan DLL dari tail ke head (Descending).
 void printDLLBackward(DNode* tail) {
     if (!tail) {
-        printf("\n  [INFO] List DLL kosong untuk ditampilkan (Urutan Descending).\n");
+        printf("\n  [INFO] List kosong untuk ditampilkan.\n");
         return;
     }
     printf("\n  +----------------------------------------------------+\n");
@@ -102,6 +128,7 @@ void printDLLBackward(DNode* tail) {
     printf("\n  -- Akhir Daftar (Descending) --\n");
 }
 
+// Membebaskan memori DLL.
 void freeDLL(DNode* head) {
     DNode* temp;
     while (head) {

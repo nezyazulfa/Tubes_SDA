@@ -1,23 +1,29 @@
+// src/stack.c
+
+/*
+ * File ini berisi implementasi struktur data Stack (Tumpukan) - LIFO.
+ * Digunakan untuk fitur bookmark, di mana bookmark terakhir yang ditambahkan
+ * akan menjadi yang pertama ditampilkan.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/stack.h" // Sesuaikan path
+#include "../include/stack.h"
 
+// Menambahkan data ke atas tumpukan.
 void push(StackNode** top, Paper data) {
     StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
-    if (!newNode) {
-        perror("Gagal alokasi memori untuk StackNode");
-        return;
-    }
+    if (!newNode) return;
     newNode->data = data;
     newNode->next = *top;
     *top = newNode;
 }
 
+// Mengambil data dari atas tumpukan.
 Paper pop(StackNode** top) {
-    Paper emptyPaper = {"-1", "Stack Kosong", "N/A", "N/A", 0}; // Data sentinel
+    Paper emptyPaper = {"-1", "Stack Kosong", "N/A", "N/A", 0};
     if (!*top) {
-        // printf("Stack kosong, tidak bisa pop.\n");
         return emptyPaper;
     }
     StackNode* temp = *top;
@@ -27,6 +33,7 @@ Paper pop(StackNode** top) {
     return data;
 }
 
+// Menampilkan semua bookmark dari atas ke bawah.
 void printBookmarks(StackNode* top) {
     if (!top) {
         printf("\n  [INFO] Tidak ada bookmark untuk ditampilkan.\n");
@@ -36,40 +43,47 @@ void printBookmarks(StackNode* top) {
     printf("  |        DAFTAR BOOKMARK (Terbaru di Atas)         |\n");
     printf("  +----------------------------------------------------+\n");
     StackNode* current = top;
-    int count = 1;
     while (current) {
-        printf("\n  [%d] ID    : %s\n", count++, current->data.id);
-        printf("      Judul : %s\n", current->data.title);
-        printf("      Tahun : %d\n", current->data.year);
+        printf("\n  --- Bookmark ID: %s ---\n", current->data.id);
+        printf("      Judul: ");
+        print_truncated(current->data.title, 60);
+        printf("\n      Tahun: %d\n", current->data.year);
         current = current->next;
     }
     printf("\n  -- Akhir Daftar Bookmark --\n");
 }
 
+/*
+ * =====================================================================================
+ * Penjelasan saveBookmarksToFile
+ * =====================================================================================
+ * Menyimpan data dari stack ke file teks. Karena kita men-traverse stack dari
+ * 'top' ke bawah, urutan di file akan sama dengan yang ditampilkan di layar
+ * (LIFO - yang terbaru di baris paling atas file).
+ * Format penyimpanan `|` (pipe) dipilih agar konsisten dengan file input.
+ * =====================================================================================
+ */
 void saveBookmarksToFile(StackNode* top, const char* filename) {
-    FILE* fp = fopen(filename, "w"); // "w" untuk overwrite, "a" untuk append
+    FILE* fp = fopen(filename, "w");
     if (!fp) {
         perror("Gagal membuka file untuk menyimpan bookmark");
         return;
     }
-    // Untuk menyimpan dalam urutan LIFO (seperti di stack), kita perlu reverse
-    // atau pop satu per satu dan tulis. Cara mudah adalah traverse dan tulis,
-    // ini akan menyimpan dalam urutan terbalik dari stack (yang tertua dulu).
-    // Jika ingin urutan sama seperti saat printBookmarks (terbaru dulu),
-    // kita harus pop dan simpan ke file, atau simpan ke temp SLL lalu tulis.
-    // Untuk kesederhanaan, kita tulis sesuai urutan traversal dari top.
     StackNode* current = top;
     while (current) {
         fprintf(fp, "%s|%s|%s|%s|%d\n",
-                current->data.id, current->data.title,
-                current->data.incitation, current->data.author,
+                current->data.id,
+                current->data.title,
+                current->data.incitation,
+                current->data.author,
                 current->data.year);
         current = current->next;
     }
     fclose(fp);
-    printf("Bookmark berhasil disimpan ke %s.\n", filename);
+    printf("\n  [OK] Bookmark berhasil disimpan ke %s\n", filename);
 }
 
+// Membebaskan semua node di dalam stack.
 void freeStack(StackNode* top) {
     while (top) {
         StackNode* temp = top;
