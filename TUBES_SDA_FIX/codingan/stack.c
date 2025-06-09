@@ -46,11 +46,19 @@ void printBookmarks(StackNode* top) {
 }
 
 void saveBookmarksToFile(StackNode* top, const char* filename) {
+    // PENGECEKAN BARU: Pastikan stack tidak kosong sebelum melakukan apapun.
+    if (top == NULL) {
+        printf("\n  [INFO] Daftar bookmark kosong. Tidak ada yang disimpan.\n");
+        return; // Keluar dari fungsi jika tidak ada data
+    }
+
+    // Kode di bawah ini hanya akan berjalan jika bookmark ada.
     FILE* fp = fopen(filename, "w");
     if (!fp) {
         perror("  [ERROR] Gagal membuka file untuk menyimpan bookmark");
         return;
     }
+
     StackNode* current = top;
     while (current) {
         fprintf(fp, "%s|%s|%s|%s|%d\n",
@@ -61,6 +69,7 @@ void saveBookmarksToFile(StackNode* top, const char* filename) {
                 current->data.year);
         current = current->next;
     }
+
     fclose(fp);
     printf("\n  [OK] Bookmark berhasil disimpan ke %s\n", filename);
 }
