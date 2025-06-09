@@ -31,7 +31,7 @@ Node* loadDataFromFile(const char* filename) {
     Node* head = NULL;
     Node* tail = NULL;
     Paper temp;
-    while (fscanf(file, " %99[^|]|%999[^|]|%99[^|]|%999[^|]|%d\n",
+    while (fscanf(file, " %[^|]|%[^|]|%[^|]|%[^|]|%d\n",
                   temp.id, temp.title, temp.incitation, temp.author, &temp.year) == 5) {
         Node* newNode = createNode(temp);
         if (!head) {
