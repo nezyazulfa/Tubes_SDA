@@ -7,7 +7,7 @@
 
 /*
  * =====================================================================================
- * Penjelasan Struktur Data TreeNode
+ * Penjelasan Struktur Data TreeNode (Pohon Sitasi)
  * =====================================================================================
  * Struct 'TreeNode' digunakan untuk membangun pohon sitasi.
  * Ini bukan pohon biner biasa, melainkan pohon general (n-ary tree), di mana

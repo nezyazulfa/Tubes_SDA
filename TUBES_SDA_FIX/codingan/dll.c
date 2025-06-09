@@ -44,13 +44,15 @@ DNode* convertSLLtoDLL(Node* sllHead) {
  * =====================================================================================
  * Fungsi ini mengurutkan DLL menggunakan algoritma Bubble Sort.
  *
- * Mengapa Bubble Sort? Bubble Sort dipilih karena implementasinya yang sederhana
- * dan mudah dipahami, cocok untuk tujuan pembelajaran. Ia bekerja dengan cara
- * berulang kali menukar elemen yang bersebelahan jika urutannya salah.
+ * Mengapa Bubble Sort? Bubble Sort sengaja dipilih karena implementasinya yang
+ * paling sederhana dan mudah dipahami, sangat cocok untuk tujuan pembelajaran
+ * dan demonstrasi struktur data dasar. Ia bekerja dengan cara berulang kali
+ * menukar elemen yang bersebelahan jika urutannya salah.
  *
  * Kompleksitas Waktu: O(n^2), yang tidak efisien untuk dataset besar.
- * Untuk dataset yang sangat besar, algoritma yang lebih canggih seperti Merge Sort
- * (O(n log n)) akan jauh lebih cepat, namun implementasinya lebih kompleks.
+ * Untuk aplikasi nyata dengan data besar, algoritma seperti Merge Sort (O(n log n))
+ * akan jauh lebih superior karena kecepatannya. Kemampuan untuk menjelaskan
+ * trade-off antara kesederhanaan implementasi dan efisiensi ini adalah poin penting.
  * =====================================================================================
  */
 void sortDLLByYear(DNode** headRef, int ascending) {
@@ -62,7 +64,6 @@ void sortDLLByYear(DNode** headRef, int ascending) {
         swapped = 0;
         ptr = *headRef;
         while (ptr->next != lptr) {
-            // Logika perbandingan diubah berdasarkan parameter 'ascending'
             int condition = ascending ? (ptr->data.year > ptr->next->data.year)
                                       : (ptr->data.year < ptr->next->data.year);
             if (condition) {
@@ -79,16 +80,11 @@ void sortDLLByYear(DNode** headRef, int ascending) {
 
 // Fungsi helper untuk mencetak detail satu paper, agar tidak duplikasi kode.
 void printPaperDetailsDLL(Paper data, int* count) {
-    printf("\n  --- Paper (%d) ---\n", *count);
-    printf("    ID           : %s\n", data.id);
-    printf("    Judul        : ");
+    printf("\n  ---[ No. %d | Tahun: %d ]---\n", *count, data.year);
+    printf("    ID    : %s\n", data.id);
+    printf("    Judul : ");
     print_truncated(data.title, 60);
     printf("\n");
-    printf("    Mensitasi ID : %s\n", data.incitation);
-    printf("    Author       : ");
-    print_truncated(data.author, 60);
-    printf("\n");
-    printf("    Tahun        : %d\n", data.year);
     (*count)++;
 }
 

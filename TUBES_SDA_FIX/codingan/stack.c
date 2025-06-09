@@ -44,7 +44,7 @@ void printBookmarks(StackNode* top) {
     printf("  +----------------------------------------------------+\n");
     StackNode* current = top;
     while (current) {
-        printf("\n  --- Bookmark ID: %s ---\n", current->data.id);
+        printf("\n  ---[ Bookmark: %s ]---\n", current->data.id);
         printf("      Judul: ");
         print_truncated(current->data.title, 60);
         printf("\n      Tahun: %d\n", current->data.year);
@@ -66,7 +66,7 @@ void printBookmarks(StackNode* top) {
 void saveBookmarksToFile(StackNode* top, const char* filename) {
     FILE* fp = fopen(filename, "w");
     if (!fp) {
-        perror("Gagal membuka file untuk menyimpan bookmark");
+        perror("  [ERROR] Gagal membuka file untuk menyimpan bookmark");
         return;
     }
     StackNode* current = top;

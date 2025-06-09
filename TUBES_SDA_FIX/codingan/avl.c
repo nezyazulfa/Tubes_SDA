@@ -1,213 +1,183 @@
 // src/avl.c
 
-/*
- * File ini berisi implementasi lengkap dari struktur data AVL Tree.
- * Tujuannya adalah untuk menyediakan operasi pencarian (search) yang sangat
- * cepat dengan kompleksitas waktu O(log n).
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../include/avl.h"
 
-// --- Fungsi Helper Internal ---
+// Deklarasi fungsi-fungsi internal
+void displayAVLAnalysis(AVLNode* root);
 
-// Fungsi untuk mendapatkan tinggi sebuah node.
-int height(AVLNode* N) {
-    if (N == NULL)
-        return 0;
-    return N->height;
-}
+// --- Fungsi Inti AVL (tidak berubah) ---
+int height(AVLNode* N) { if (N == NULL) return 0; return N->height; }
+int max(int a, int b) { return (a > b) ? a : b; }
+int getBalance(AVLNode* N) { if (N == NULL) return 0; return height(N->left) - height(N->right); }
 
-// Fungsi untuk mendapatkan nilai maksimum dari dua integer.
-int max(int a, int b) {
-    return (a > b) ? a : b;
-}
-
-// Fungsi untuk membuat node AVL baru.
 AVLNode* createAVLNode(Paper data) {
     AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
+    if(!node) return NULL;
     node->data = data;
     node->left = NULL;
     node->right = NULL;
-    node->height = 1; // Node baru awalnya memiliki tinggi 1
+    node->height = 1;
     return node;
 }
 
-
-/*
- * =====================================================================================
- * Penjelasan Fungsi Rotasi
- * =====================================================================================
- * Rotasi adalah mekanisme inti untuk menyeimbangkan kembali pohon.
- * Ada dua jenis rotasi dasar: Kanan (right) dan Kiri (left).
- *
- * Right Rotate (Rotasi Kanan):
- * Dilakukan ketika pohon menjadi "berat sebelah kiri".
- * Node 'y' yang tidak seimbang akan turun, dan anak kirinya 'x' akan naik
- * menjadi root baru dari subtree ini.
- *
- * y                               x
- * / \                             /   \
- * x   T3                          T1    y
- * / \       --Rotasi Kanan-->       / \
- * T1  T2                            T2  T3
- *
- * Left Rotate (Rotasi Kiri):
- * Kebalikan dari rotasi kanan, dilakukan saat pohon "berat sebelah kanan".
- *
- * x                               y
- * / \                             /   \
- * T1  y                           x     T3
- * / \     --Rotasi Kiri-->    / \
- * T2  T3                      T1  T2
- * =====================================================================================
- */
 AVLNode* rightRotate(AVLNode* y) {
     AVLNode* x = y->left;
     AVLNode* T2 = x->right;
-
-    // Lakukan rotasi
     x->right = y;
     y->left = T2;
-
-    // Perbarui tinggi node yang berubah
     y->height = max(height(y->left), height(y->right)) + 1;
     x->height = max(height(x->left), height(x->right)) + 1;
-
-    // Kembalikan root baru dari subtree
     return x;
 }
 
 AVLNode* leftRotate(AVLNode* x) {
     AVLNode* y = x->right;
     AVLNode* T2 = y->left;
-
-    // Lakukan rotasi
     y->left = x;
     x->right = T2;
-
-    // Perbarui tinggi
     x->height = max(height(x->left), height(x->right)) + 1;
     y->height = max(height(y->left), height(y->right)) + 1;
-
-    // Kembalikan root baru
     return y;
 }
 
-
-// Fungsi untuk mendapatkan Balance Factor dari sebuah node.
-int getBalance(AVLNode* N) {
-    if (N == NULL)
-        return 0;
-    return height(N->right) - height(N->left);
-}
-
-
-/*
- * =====================================================================================
- * Penjelasan Fungsi insertAVL (SANGAT PENTING)
- * =====================================================================================
- * Fungsi ini menyisipkan sebuah paper ke dalam AVL Tree secara rekursif.
- *
- * Algoritma:
- * 1. LAKUKAN PENYISIPAN BST STANDAR:
- * Secara rekursif, cari posisi yang tepat untuk node baru berdasarkan perbandingan
- * ID string (`strcmp`), lalu sisipkan di sana.
- *
- * 2. PERBARUI TINGGI:
- * Setelah menyisipkan, perbarui tinggi dari node leluhur (ancestor).
- *
- * 3. HITUNG BALANCE FACTOR:
- * Hitung balance factor dari node leluhur ini untuk memeriksa apakah pohon
- * menjadi tidak seimbang setelah penyisipan.
- *
- * 4. LAKUKAN ROTASI JIKA PERLU (PROSES REBALANCING):
- * Jika balance factor adalah -2 atau 2, pohon tidak seimbang. Ada 4 kasus:
- * a. Left-Left Case (Berat Kiri-Kiri): Cukup 1x Rotasi Kanan.
- * b. Right-Right Case (Berat Kanan-Kanan): Cukup 1x Rotasi Kiri.
- * c. Left-Right Case (Berat Kiri-Kanan): Rotasi Kiri pada anak kiri, lalu Rotasi Kanan pada node ini.
- * d. Right-Left Case (Berat Kanan-Kiri): Rotasi Kanan pada anak kanan, lalu Rotasi Kiri pada node ini.
- *
- * Proses ini menjamin pohon tetap seimbang setelah setiap penyisipan.
- * =====================================================================================
- */
-AVLNode* insertAVL(AVLNode* node, Paper data) {
-    // 1. Lakukan penyisipan BST standar
-    if (node == NULL)
-        return createAVLNode(data);
+AVLNode* insertAVL(AVLNode* node, Paper data, int visualize) {
+    if (node == NULL) return createAVLNode(data);
 
     if (strcmp(data.id, node->data.id) < 0)
-        node->left = insertAVL(node->left, data);
+        node->left = insertAVL(node->left, data, visualize);
     else if (strcmp(data.id, node->data.id) > 0)
-        node->right = insertAVL(node->right, data);
-    else // ID yang sama tidak diizinkan di BST
+        node->right = insertAVL(node->right, data, visualize);
+    else
         return node;
 
-    // 2. Perbarui tinggi dari node leluhur ini
     node->height = 1 + max(height(node->left), height(node->right));
-
-    // 3. Hitung balance factor
     int balance = getBalance(node);
+    int was_unbalanced = (balance > 1 || balance < -1);
 
-    // 4. Jika tidak seimbang, lakukan rotasi sesuai 4 kasus
-
-    // Left-Left Case
-    if (balance < -1 && strcmp(data.id, node->left->data.id) < 0)
-        return rightRotate(node);
-
-    // Right-Right Case
-    if (balance > 1 && strcmp(data.id, node->right->data.id) > 0)
-        return leftRotate(node);
-
-    // Left-Right Case
-    if (balance < -1 && strcmp(data.id, node->left->data.id) > 0) {
+    if (visualize && was_unbalanced) {
+        printf("\n--> Terdeteksi ketidakseimbangan pada node [%s]. Balance factor: %d\n", node->data.id, balance);
+        printf("--> Kondisi Pohon SEBELUM Rotasi:\n");
+        displayAVLAnalysis(node);
+        printf("    Tekan Enter untuk melanjutkan ke proses rotasi...");
+        getchar();
+    }
+    
+    if (balance > 1 && strcmp(data.id, node->left->data.id) < 0) {
+        if (visualize) printf("--> KASUS: Left-Left. Melakukan ROTASI KANAN pada node [%s]\n", node->data.id);
+        node = rightRotate(node);
+    }
+    else if (balance < -1 && strcmp(data.id, node->right->data.id) > 0) {
+        if (visualize) printf("--> KASUS: Right-Right. Melakukan ROTASI KIRI pada node [%s]\n", node->data.id);
+        node = leftRotate(node);
+    }
+    else if (balance > 1 && strcmp(data.id, node->left->data.id) > 0) {
+        if (visualize) printf("--> KASUS: Left-Right. Melakukan ROTASI KIRI-KANAN pada node [%s]\n", node->data.id);
         node->left = leftRotate(node->left);
-        return rightRotate(node);
+        node = rightRotate(node);
     }
-
-    // Right-Left Case
-    if (balance > 1 && strcmp(data.id, node->right->data.id) < 0) {
+    else if (balance < -1 && strcmp(data.id, node->right->data.id) < 0) {
+        if (visualize) printf("--> KASUS: Right-Left. Melakukan ROTASI KANAN-KIRI pada node [%s]\n", node->data.id);
         node->right = rightRotate(node->right);
-        return leftRotate(node);
+        node = leftRotate(node);
     }
 
-    // Kembalikan pointer node (jika tidak ada rotasi)
+    if (visualize && was_unbalanced) {
+        printf("\n--> Kondisi Pohon SETELAH Rotasi:\n");
+        displayAVLAnalysis(node);
+        printf("    Tekan Enter untuk melanjutkan penyisipan berikutnya...");
+        getchar();
+    }
     return node;
 }
 
-
-// Fungsi untuk mencari node berdasarkan ID (pencarian BST standar)
 AVLNode* searchAVL(AVLNode* root, const char* id) {
-    // Basis kasus: root adalah NULL atau ID ditemukan di root
-    if (root == NULL || strcmp(root->data.id, id) == 0)
-        return root;
-
-    // Jika ID yang dicari lebih besar dari ID root, cari di subtree kanan
-    if (strcmp(root->data.id, id) < 0)
-        return searchAVL(root->right, id);
-
-    // Jika ID yang dicari lebih kecil, cari di subtree kiri
+    if (root == NULL || strcmp(root->data.id, id) == 0) return root;
+    if (strcmp(id, root->data.id) > 0) return searchAVL(root->right, id);
     return searchAVL(root->left, id);
 }
 
-// Fungsi pembungkus untuk membangun AVL Tree dari SLL
-AVLNode* buildAVLTreeFromSLL(Node* head) {
+AVLNode* buildAVLTreeFromSLL(Node* head, int visualize) {
     AVLNode* root = NULL;
     Node* current = head;
+    int count = 1;
     while (current != NULL) {
-        root = insertAVL(root, current->data);
+        if (visualize) {
+            printf("\n\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LANGKAH %d >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", count++);
+            printf("Menyisipkan Paper: [%s] ", current->data.id);
+            print_truncated(current->data.title, 50);
+            printf("\n");
+        }
+        root = insertAVL(root, current->data, visualize);
         current = current->next;
+    }
+    if (visualize) {
+        printf("\n\nPEMBANGUNAN AVL TREE SELESAI.\n");
+        printf("Struktur Pohon Final:\n");
+        displayAVLAnalysis(root);
     }
     return root;
 }
 
-// Membebaskan memori AVL tree secara rekursif (post-order traversal)
 void freeAVLTree(AVLNode* root) {
     if (root != NULL) {
         freeAVLTree(root->left);
         freeAVLTree(root->right);
         free(root);
     }
+}
+
+// =====================================================================================
+// Implementasi Visualisasi AVL Tree Gabungan (Diagram + Deskripsi)
+// =====================================================================================
+
+// --- Bagian 1: Logika untuk Visualisasi Diagram ---
+void printAVLRecursive_Graph(AVLNode* node, char* prefix, int isLeft) {
+    if (node == NULL) return;
+    printf("%s", prefix);
+    printf(isLeft ? "`-- " : "|-- ");
+    printf("[%s] (BF: %d)\n", node->data.id, getBalance(node));
+
+    char new_prefix[1000];
+    sprintf(new_prefix, "%s%s", prefix, isLeft ? "    " : "|   ");
+
+    if (node->left != NULL || node->right != NULL) {
+        if (node->right) printAVLRecursive_Graph(node->right, new_prefix, node->left == NULL ? 1 : 0);
+        if (node->left) printAVLRecursive_Graph(node->left, new_prefix, 1);
+    }
+}
+
+// --- Bagian 2: Logika untuk Deskripsi Detail ---
+void printAVLRecursive_Desc(AVLNode* node, const char* parent_id) {
+    if (node == NULL) return;
+    printf("- Node [%s]\n", node->data.id);
+    printf("  - Parent        : %s\n", (parent_id == NULL) ? "Ini adalah ROOT" : parent_id);
+    printf("  - Anak Kiri     : %s\n", (node->left) ? node->left->data.id : "(Kosong)");
+    printf("  - Anak Kanan    : %s\n", (node->right) ? node->right->data.id : "(Kosong)");
+    printf("  - Balance Factor: %d\n\n", getBalance(node));
+    printAVLRecursive_Desc(node->left, node->data.id);
+    printAVLRecursive_Desc(node->right, node->data.id);
+}
+
+
+// --- Bagian 3: Fungsi Wrapper Utama ---
+void displayAVLAnalysis(AVLNode* root) {
+    if (root == NULL) {
+        printf("\n(Pohon Kosong)\n");
+        return;
+    }
+
+    // Tampilkan Diagram
+    printf("\n+--------------------- DIAGRAM POHON ----------------------+\n");
+    printf("[%s] (BF: %d)\n", root->data.id, getBalance(root));
+    if (root->right) printAVLRecursive_Graph(root->right, "", root->left == NULL ? 1 : 0);
+    if (root->left) printAVLRecursive_Graph(root->left, "", 1);
+    printf("+--------------------------------------------------------+\n");
+
+    // Tampilkan Deskripsi Detail
+    printf("\n+-------------------- DESKRIPSI DETAIL --------------------+\n");
+    printAVLRecursive_Desc(root, NULL);
+    printf("+--------------------------------------------------------+\n");
 }

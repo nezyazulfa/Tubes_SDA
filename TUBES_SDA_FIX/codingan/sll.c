@@ -84,17 +84,17 @@ void print_truncated(const char* text, int max_len) {
 
 // Menampilkan semua paper dengan format yang rapi menggunakan print_truncated.
 void printAllPapers(Node* head) {
-    Node* curr = head;
-    if (!curr) {
+    if (!head) {
         printf("\n  [INFO] Tidak ada paper untuk ditampilkan.\n");
         return;
     }
     printf("\n  +----------------------------------------------------+\n");
-    printf("  |           DAFTAR SEMUA PAPER (ASLI)            |\n");
+    printf("  |           DAFTAR SEMUA PAPER (URUTAN ASLI)       |\n");
     printf("  +----------------------------------------------------+\n");
 
+    Node* curr = head;
     while (curr) {
-        printf("\n  --- Paper ID: %s ---\n", curr->data.id);
+        printf("\n  ---[ Paper ID: %s ]---\n", curr->data.id);
         printf("    Judul        : ");
         print_truncated(curr->data.title, 60);
         printf("\n");
@@ -118,6 +118,8 @@ void printAllPapers(Node* head) {
  * menggunakan `strcmp()`. `strcmp()` mengembalikan 0 jika kedua string sama.
  * Jika ditemukan, ia mengembalikan pointer ke `Node` tersebut. Jika tidak, NULL.
  * Kompleksitas waktu: O(n), di mana n adalah jumlah node.
+ * Fungsi ini masih dipertahankan untuk fitur seperti "Tambah Bookmark" di mana
+ * kita perlu node asli dari SLL.
  * =====================================================================================
  */
 Node* searchPaperById(Node* head, const char* id) {

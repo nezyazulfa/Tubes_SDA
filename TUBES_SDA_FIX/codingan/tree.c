@@ -1,7 +1,7 @@
 // src/tree.c
 
 /*
- * File ini mengelola semua yang berhubungan dengan struktur data Tree.
+ * File ini mengelola semua yang berhubungan dengan struktur data Tree (Pohon Sitasi).
  * Pohon ini merepresentasikan jaringan sitasi, di mana sebuah paper
  * yang mensitasi paper lain akan menjadi 'anak' dari paper yang disitasi.
  */
@@ -117,6 +117,8 @@ TreeNode* buildCitationTree(Node* paperList) {
             }
             if (parentNode) {
                 addChild(parentNode, currentNode);
+            } else {
+                // printf("Peringatan: Paper '%s' merujuk sitasi '%s' yang tidak ada di dataset.\n", currentNode->data.id, citationId);
             }
         }
     }
@@ -154,6 +156,7 @@ void printTreeRecursive(TreeNode* node, char* prefix, int isLast) {
     printf("%s", prefix);
     printf(isLast ? "`-- " : "|-- ");
 
+    // Mencetak info node dengan format yang lebih rapi
     printf("[%s] ", node->data.id);
     print_truncated(node->data.title, 60);
     printf(" (%d)\n", node->data.year);
@@ -170,7 +173,7 @@ void printTreeRecursive(TreeNode* node, char* prefix, int isLast) {
 
 void printTreeVisual(TreeNode* root) {
     if (!root) {
-        printf("[INFO] Pohon kosong, tidak ada yang bisa ditampilkan.\n");
+        printf("\n  [INFO] Pohon kosong atau gagal dibangun.\n");
         return;
     }
 
@@ -186,7 +189,10 @@ void printTreeVisual(TreeNode* root) {
         }
 
         root = root->sibling;
-        printf("\n------------------------------------------------------\n");
+        if(root) {
+            printf("\n------------------------------------------------------\n");
+            printf("--- ROOT POHON BERIKUTNYA ---\n");
+        }
     }
 }
 

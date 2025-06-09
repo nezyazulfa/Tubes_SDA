@@ -57,7 +57,7 @@ Node* loadDataFromFile(const char* filename);
 // Fungsi untuk menampilkan semua paper dalam SLL.
 void printAllPapers(Node* head);
 
-// Fungsi untuk mencari paper berdasarkan ID string-nya.
+// Fungsi untuk mencari paper berdasarkan ID string-nya di SLL (digunakan untuk fallback).
 Node* searchPaperById(Node* head, const char* id);
 
 // Fungsi untuk membebaskan semua memori yang dialokasikan untuk SLL.
