@@ -46,7 +46,7 @@ void bookmarkMenu(StackNode** bookmarkStack, Node* paperList) {
     switch(choice) {
         case 1:
             printf("\n  Masukkan ID paper yang ingin dibookmark: ");
-            scanf("%99s", id);
+            scanf("%s", id);
             clearInputBuffer();
             Node* found = searchPaperById(paperList, id);
             if (found) {
@@ -142,7 +142,7 @@ int main() {
                 printf("|             CARI PAPER BERDASARKAN ID (LINEAR SEARCH)           |\n");
                 printf("+=================================================================+\n\n");
                 printf("  Masukkan ID paper yang dicari: ");
-                scanf("%99s", id);
+                scanf("%s", id);
                 clearInputBuffer();
                 
                 // Pencarian sekarang kembali menggunakan searchPaperById dari SLL
@@ -171,7 +171,7 @@ int main() {
                 initQueue(&citationQueue);
                 char targetId[100];
                 printf("  Masukkan ID paper basis rekomendasi: ");
-                scanf("%99s", targetId);
+                scanf("%s", targetId);
                 clearInputBuffer();
 
                 Node* sourcePaper = searchPaperById(paperList, targetId);
