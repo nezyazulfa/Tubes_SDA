@@ -1,17 +1,15 @@
 // src/stack.c
 
 /*
- * File ini berisi implementasi struktur data Stack (Tumpukan) - LIFO.
- * Digunakan untuk fitur bookmark, di mana bookmark terakhir yang ditambahkan
- * akan menjadi yang pertama ditampilkan.
+ * File: stack.c
+ * Deskripsi: Implementasi struktur data Stack (Tumpukan) dengan prinsip LIFO.
+ * Digunakan untuk fitur bookmark.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../include/stack.h"
 
-// Menambahkan data ke atas tumpukan.
 void push(StackNode** top, Paper data) {
     StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
     if (!newNode) return;
@@ -20,7 +18,6 @@ void push(StackNode** top, Paper data) {
     *top = newNode;
 }
 
-// Mengambil data dari atas tumpukan.
 Paper pop(StackNode** top) {
     Paper emptyPaper = {"-1", "Stack Kosong", "N/A", "N/A", 0};
     if (!*top) {
@@ -33,15 +30,11 @@ Paper pop(StackNode** top) {
     return data;
 }
 
-// Menampilkan semua bookmark dari atas ke bawah.
 void printBookmarks(StackNode* top) {
     if (!top) {
         printf("\n  [INFO] Tidak ada bookmark untuk ditampilkan.\n");
         return;
     }
-    printf("\n  +----------------------------------------------------+\n");
-    printf("  |        DAFTAR BOOKMARK (Terbaru di Atas)         |\n");
-    printf("  +----------------------------------------------------+\n");
     StackNode* current = top;
     while (current) {
         printf("\n  ---[ Bookmark: %s ]---\n", current->data.id);
@@ -50,19 +43,8 @@ void printBookmarks(StackNode* top) {
         printf("\n      Tahun: %d\n", current->data.year);
         current = current->next;
     }
-    printf("\n  -- Akhir Daftar Bookmark --\n");
 }
 
-/*
- * =====================================================================================
- * Penjelasan saveBookmarksToFile
- * =====================================================================================
- * Menyimpan data dari stack ke file teks. Karena kita men-traverse stack dari
- * 'top' ke bawah, urutan di file akan sama dengan yang ditampilkan di layar
- * (LIFO - yang terbaru di baris paling atas file).
- * Format penyimpanan `|` (pipe) dipilih agar konsisten dengan file input.
- * =====================================================================================
- */
 void saveBookmarksToFile(StackNode* top, const char* filename) {
     FILE* fp = fopen(filename, "w");
     if (!fp) {
@@ -83,7 +65,6 @@ void saveBookmarksToFile(StackNode* top, const char* filename) {
     printf("\n  [OK] Bookmark berhasil disimpan ke %s\n", filename);
 }
 
-// Membebaskan semua node di dalam stack.
 void freeStack(StackNode* top) {
     while (top) {
         StackNode* temp = top;

@@ -1,8 +1,15 @@
 // src/avl.c
 
+/*
+ * File: avl.c
+ * Deskripsi: Implementasi lengkap dari struktur data AVL Tree.
+ * Tujuannya adalah untuk menyediakan operasi pencarian (search) yang sangat
+ * cepat dengan kompleksitas waktu O(log n).
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../include/avl.h"
 
 // Deklarasi fungsi-fungsi internal
@@ -45,7 +52,6 @@ AVLNode* leftRotate(AVLNode* x) {
 
 AVLNode* insertAVL(AVLNode* node, Paper data, int visualize) {
     if (node == NULL) return createAVLNode(data);
-
     if (strcmp(data.id, node->data.id) < 0)
         node->left = insertAVL(node->left, data, visualize);
     else if (strcmp(data.id, node->data.id) > 0)
@@ -121,35 +127,21 @@ AVLNode* buildAVLTreeFromSLL(Node* head, int visualize) {
     return root;
 }
 
-void freeAVLTree(AVLNode* root) {
-    if (root != NULL) {
-        freeAVLTree(root->left);
-        freeAVLTree(root->right);
-        free(root);
-    }
-}
+// Fungsi performSearchRace telah dihapus dari sini.
 
-// =====================================================================================
-// Implementasi Visualisasi AVL Tree Gabungan (Diagram + Deskripsi)
-// =====================================================================================
-
-// --- Bagian 1: Logika untuk Visualisasi Diagram ---
 void printAVLRecursive_Graph(AVLNode* node, char* prefix, int isLeft) {
     if (node == NULL) return;
     printf("%s", prefix);
     printf(isLeft ? "`-- " : "|-- ");
     printf("[%s] (BF: %d)\n", node->data.id, getBalance(node));
-
     char new_prefix[1000];
     sprintf(new_prefix, "%s%s", prefix, isLeft ? "    " : "|   ");
-
     if (node->left != NULL || node->right != NULL) {
         if (node->right) printAVLRecursive_Graph(node->right, new_prefix, node->left == NULL ? 1 : 0);
         if (node->left) printAVLRecursive_Graph(node->left, new_prefix, 1);
     }
 }
 
-// --- Bagian 2: Logika untuk Deskripsi Detail ---
 void printAVLRecursive_Desc(AVLNode* node, const char* parent_id) {
     if (node == NULL) return;
     printf("- Node [%s]\n", node->data.id);
@@ -161,23 +153,26 @@ void printAVLRecursive_Desc(AVLNode* node, const char* parent_id) {
     printAVLRecursive_Desc(node->right, node->data.id);
 }
 
-
-// --- Bagian 3: Fungsi Wrapper Utama ---
 void displayAVLAnalysis(AVLNode* root) {
     if (root == NULL) {
         printf("\n(Pohon Kosong)\n");
         return;
     }
-
-    // Tampilkan Diagram
-    printf("\n+--------------------- DIAGRAM POHON ----------------------+\n");
+    printf("\n+--------------------- DIAGRAM STRUKTUR INDEKS (AVL Tree) ---------------------+\n");
     printf("[%s] (BF: %d)\n", root->data.id, getBalance(root));
     if (root->right) printAVLRecursive_Graph(root->right, "", root->left == NULL ? 1 : 0);
     if (root->left) printAVLRecursive_Graph(root->left, "", 1);
-    printf("+--------------------------------------------------------+\n");
+    printf("+------------------------------------------------------------------------------+\n");
 
-    // Tampilkan Deskripsi Detail
-    printf("\n+-------------------- DESKRIPSI DETAIL --------------------+\n");
+    printf("\n+-------------------- DESKRIPSI DETAIL STRUKTUR INDEKS --------------------+\n");
     printAVLRecursive_Desc(root, NULL);
-    printf("+--------------------------------------------------------+\n");
+    printf("+--------------------------------------------------------------------------+\n");
+}
+
+void freeAVLTree(AVLNode* root) {
+    if (root != NULL) {
+        freeAVLTree(root->left);
+        freeAVLTree(root->right);
+        free(root);
+    }
 }

@@ -1,5 +1,4 @@
 // include/tree.h
-
 #ifndef TREE_H
 #define TREE_H
 
@@ -7,21 +6,15 @@
 
 /*
  * =====================================================================================
- * Penjelasan Struktur Data TreeNode (Pohon Sitasi)
+ * PENJELASAN UNTUK DOSEN: Struktur Data TreeNode (Pohon Sitasi)
  * =====================================================================================
- * Struct 'TreeNode' digunakan untuk membangun pohon sitasi.
- * Ini bukan pohon biner biasa, melainkan pohon general (n-ary tree), di mana
- * satu node bisa memiliki banyak anak.
- *
- * Representasi yang digunakan adalah "First-Child, Next-Sibling".
- * - 'data': Menyimpan satu buah data 'Paper'.
- * - 'child': Pointer yang menunjuk ke ANAK PERTAMA dari node ini.
- * - 'sibling': Pointer yang menunjuk ke SAUDARA (node lain yang memiliki
- * induk yang sama) berikutnya dari node ini.
- *
- * Keuntungan: Representasi ini memungkinkan kita membangun pohon dengan jumlah
- * anak yang dinamis menggunakan struktur node yang tetap (hanya 2 pointer),
- * mirip seperti linked list, yang sangat efisien dalam penggunaan memori.
+ * "Untuk memvisualisasikan jejaring sitasi, kami menggunakan struktur data pohon
+ * general (n-ary tree), karena satu paper bisa disitasi oleh banyak paper lain.
+ * Kami mengimplementasikannya dengan representasi 'First-Child, Next-Sibling'.
+ * - 'child': Menunjuk ke anak PERTAMA.
+ * - 'sibling': Menunjuk ke saudara berikutnya (paper lain yang mensitasi induk yang sama).
+ * Keuntungan metode ini adalah efisiensi memori; setiap node hanya butuh dua pointer
+ * terlepas dari berapa banyak anaknya, mirip seperti linked list."
  * =====================================================================================
  */
 typedef struct TreeNode {
@@ -30,13 +23,8 @@ typedef struct TreeNode {
     struct TreeNode* sibling;
 } TreeNode;
 
-// Fungsi untuk membangun pohon dari SLL.
 TreeNode* buildCitationTree(Node* paperList);
-
-// Fungsi untuk menampilkan visualisasi pohon.
 void printTreeVisual(TreeNode* root);
-
-// Fungsi untuk membebaskan semua memori yang dialokasikan untuk pohon.
 void freeTree(TreeNode* root);
 
 #endif

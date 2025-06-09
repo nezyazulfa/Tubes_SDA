@@ -1,5 +1,4 @@
 // src/main.c
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,13 +9,11 @@
 #include "../include/queue.h"
 #include "../include/avl.h"
 
-// Fungsi untuk membersihkan buffer input setelah scanf.
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
-// Fungsi untuk membersihkan layar konsol (cross-platform).
 void clearScreen() {
 #ifdef _WIN32
     system("cls");
@@ -25,64 +22,71 @@ void clearScreen() {
 #endif
 }
 
-// Sub-menu untuk analisis dan visualisasi AVL Tree.
-void avlMenu(AVLNode* avlRoot, Node* paperList) {
+// Menu untuk analisis dan visualisasi AVL Tree (tanpa adu cepat)
+void analysisMenu(AVLNode* avlRoot, Node* paperList) {
     int choice;
     clearScreen();
     printf("+=================================================================+\n");
-    printf("|          ANALISIS, DIAGRAM, & DESKRIPSI AVL TREE                |\n");
+    printf("|          VISUALISASI & ANALISIS STRUKTUR INDEKS (AVL)           |\n");
     printf("+=================================================================+\n\n");
-    printf("  [1] Tampilkan Analisis Pohon AVL Final\n");
-    printf("  [2] Tampilkan Proses Pembangunan AVL Step-by-Step\n");
+    printf("  Fitur ini membantu memahami bagaimana struktur data indeks pencarian\n");
+    printf("  dibangun dan dijaga agar tetap seimbang untuk pencarian cepat.\n\n");
+    printf("  [1] Tampilkan Struktur Indeks Final (Diagram & Deskripsi)\n");
+    printf("  [2] Tampilkan Proses Pembangunan Indeks Step-by-Step\n");
     printf("  [0] Kembali ke Menu Utama\n\n");
     printf("  >> Pilihan Anda: ");
-
-    if (scanf("%d", &choice) != 1) {
-        choice = -1; // Menandai pilihan tidak valid
-    }
+    
+    if (scanf("%d", &choice) != 1) { choice = -1; }
     clearInputBuffer();
 
     switch(choice) {
         case 1:
-            printf("\n\n--- ANALISIS POHON AVL FINAL ---\n");
+            clearScreen();
+            printf("+=================================================================+\n");
+            printf("|               ANALISIS STRUKTUR INDEKS FINAL (AVL)              |\n");
+            printf("+=================================================================+\n\n");
             displayAVLAnalysis(avlRoot);
             break;
         case 2:
-            printf("\n\n--- MEMULAI ULANG PROSES PEMBANGUNAN UNTUK DEMONSTRASI ---\n");
-            // Pohon ini dibangun ulang hanya untuk tujuan demonstrasi step-by-step
-            // dan langsung dibebaskan memorinya setelah selesai.
+            clearScreen();
+            printf("+=================================================================+\n");
+            printf("|         DEMONSTRASI PEMBANGUNAN INDEKS STEP-BY-STEP             |\n");
+            printf("+=================================================================+\n\n");
             AVLNode* tempVisualAVL = buildAVLTreeFromSLL(paperList, 1);
             freeAVLTree(tempVisualAVL);
             break;
-        case 0:
-            return; // Kembali ke menu utama
-        default:
-            printf("\n  [ERROR] Pilihan tidak valid.\n");
-            break;
+        case 0: return;
+        default: printf("\n  [ERROR] Pilihan tidak valid.\n"); break;
     }
     printf("\n\n  Tekan Enter untuk kembali...");
     getchar();
 }
 
-
 int main() {
-    // Pastikan path ke data.txt sudah benar
-    Node* paperList = loadDataFromFile("data.txt");
+    clearScreen();
+    printf("================================================================================\n");
+    printf("||              SISTEM REFERENSI & MANAJEMEN PAPER ILMIAH                     ||\n");
+    printf("================================================================================\n\n");
+
+    printf("Mempersiapkan sistem...\n");
+    printf("  - Memuat data dari file... ");
+    Node* paperList = loadDataFromFile("TUBES_SDA_FIX/dataset/data.txt");
     if (!paperList) {
-        printf("GAGAL MEMUAT DATA. Pastikan file 'data.txt' ada di direktori yang sama dengan program.\n");
+        printf("GAGAL.\n");
+        printf("  Pastikan file 'data.txt' ada di direktori yang sama.\n");
+        getchar();
         return 1;
     }
+    printf("OK.\n");
 
-    // Saat program dimulai, AVL tree langsung dibangun secara diam-diam (tanpa visualisasi).
-    // Ini berfungsi sebagai "indeks" untuk membuat semua operasi pencarian menjadi sangat cepat.
-    printf("Membangun indeks pencarian (AVL Tree)...");
-    AVLNode* avlRoot = buildAVLTreeFromSLL(paperList, 0); // 0 = mode senyap
-    printf(" Selesai.\n");
-    printf("Tekan Enter untuk memulai...");
+    printf("  - Membangun indeks pencarian (AVL Tree)... ");
+    AVLNode* avlRoot = buildAVLTreeFromSLL(paperList, 0);
+    printf("OK.\n");
+
+    printf("\nSistem siap digunakan.\n");
+    printf("Tekan Enter untuk masuk ke menu utama...");
     getchar();
 
-
-    // Inisialisasi struktur data lain yang dibutuhkan
     StackNode* bookmarkStack = NULL;
     Queue citationQueue;
     initQueue(&citationQueue);
@@ -90,43 +94,27 @@ int main() {
     int choice;
     char id[100];
 
-    // Loop utama program
     while (1) {
         clearScreen();
-        printf("+=================================================================+\n");
-        printf("|              SISTEM REFERENSI & MANAJEMEN PAPER                 |\n");
-        printf("+=================================================================+\n\n");
+        printf("+==============================================================================+\n");
+        printf("|                        MENU UTAMA - SISTEM MANAJEMEN PAPER                   |\n");
+        printf("+==============================================================================+\n\n");
 
-        printf("  +---------------------------------+\n");
-        printf("  |  Pencarian & Rekomendasi        |\n");
-        printf("  +---------------------------------+\n");
-        printf("  | [1] Cari Paper Berdasarkan ID   |    ---- AVL Tree (O(log n))\n");
-        printf("  | [2] Rekomendasi Paper (Sitasi)  |    ---- Queue\n");
-        printf("  +---------------------------------+\n\n");
-        printf("  +---------------------------------+\n");
-        printf("  |  Eksplorasi & Analisis          |\n");
-        printf("  +---------------------------------+\n");
-        printf("  | [3] Visualisasi Pohon Sitasi    |    ---- General Tree\n");
-        printf("  | [4] Analisis & Diagram AVL      |    ---- AVL Tree\n");
-        printf("  +---------------------------------+\n\n");
-        printf("  +---------------------------------+\n");
-        printf("  |  Manajemen Bookmark             |\n");
-        printf("  +---------------------------------+\n");
-        printf("  | [5] Tambah Paper ke Bookmark    |    ---- Stack\n");
-        printf("  | [6] Tampilkan Daftar Bookmark   |    ---- Stack\n");
-        printf("  | [7] Simpan Bookmark ke File     |    ---- Stack\n");
-        printf("  +---------------------------------+\n\n");
-        printf("  +---------------------------------+\n");
-        printf("  |  Tampilan Daftar Keseluruhan    |\n");
-        printf("  +---------------------------------+\n");
-        printf("  | [8] Tampilkan Semua (Urutan Asli)|    ---- Single Linked List\n");
-        printf("  | [9] Tampilkan Semua (Urut Tahun)|    ---- Double Linked List\n");
-        printf("  +---------------------------------+\n\n");
-        printf("  +---------------------------------+\n");
-        printf("  |  Lain-lain                      |\n");
-        printf("  +---------------------------------+\n");
-        printf("  | [10] Keluar dari Program        |\n");
-        printf("  +---------------------------------+\n\n");
+        printf("--- Fitur Utama ---\n");
+        printf("  [1] Cari Paper Berdasarkan ID   | Cepat, via Indeks AVL Tree (O(log n))\n");
+        printf("  [2] Dapatkan Rekomendasi        | Berdasarkan Sitasi (Queue)\n");
+        printf("  [3] Visualisasi Jejaring Sitasi | Lihat Hubungan Antar Paper (General Tree)\n\n");
+
+        printf("--- Analisis & Manajemen ---\n");
+        printf("  [4] Visualisasi Indeks Pencarian| Pahami cara kerja pencarian cepat (AVL)\n");
+        printf("  [5] Manajemen Bookmark          | Kelola paper pilihan (Stack)\n\n");
+
+        printf("--- Tampilan Data Lainnya ---\n");
+        printf("  [8] Tampilkan Semua (Urutan File)| Metode: SLL\n");
+        printf("  [9] Tampilkan Semua (Urut Tahun)| Metode: DLL + Bubble Sort\n\n");
+        
+        printf("--- Sistem ---\n");
+        printf("  [10] Keluar\n\n");
 
         printf("  >> Masukkan Pilihan Anda [1-10]: ");
 
@@ -141,28 +129,33 @@ int main() {
 
         switch (choice) {
             case 1: {
-                printf("\n  **** CARI PAPER BERDASARKAN ID (VIA AVL TREE) ****\n\n");
+                clearScreen();
+                printf("+=================================================================+\n");
+                printf("|               CARI PAPER BERDASARKAN ID (VIA AVL)               |\n");
+                printf("+=================================================================+\n\n");
                 printf("  Masukkan ID paper yang dicari: ");
                 scanf("%99s", id);
                 clearInputBuffer();
                 
                 AVLNode* foundNode = searchAVL(avlRoot, id);
                 if (foundNode) {
-                    printf("\n  --- Detail Lengkap Paper ---\n");
+                    printf("\n  --- Paper Ditemukan ---\n");
                     printf("    ID           : %s\n", foundNode->data.id);
                     printf("    Judul        : %s\n", foundNode->data.title);
                     printf("    Mensitasi ID : %s\n", foundNode->data.incitation);
                     printf("    Author       : %s\n", foundNode->data.author);
                     printf("    Tahun        : %d\n", foundNode->data.year);
-                    printf("  -----------------------------\n");
+                    printf("  -----------------------\n");
                 } else {
                     printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", id);
                 }
                 break;
             }
-            case 2:
-            {
-                printf("\n  **** REKOMENDASI PAPER (SITASI) ****\n\n");
+            case 2: {
+                clearScreen();
+                printf("+=================================================================+\n");
+                printf("|                 REKOMENDASI PAPER BERDASARKAN SITASI              |\n");
+                printf("+=================================================================+\n\n");
                 freeQueue(&citationQueue);
                 initQueue(&citationQueue);
                 char targetId[100];
@@ -175,7 +168,6 @@ int main() {
                     printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", targetId);
                     break;
                 }
-
                 printf("\n  Paper Basis: [%s] ", sourcePaper->data.id);
                 print_truncated(sourcePaper->data.title, 60);
                 printf("\n  Mencari paper lain yang mensitasi paper ini...\n");
@@ -219,57 +211,73 @@ int main() {
                      scanf(" %c", &nextChoiceChar);
                      clearInputBuffer();
                  } while (nextChoiceChar == 'n' || nextChoiceChar == 'N');
+                break;
             }
-            break;
-
             case 3:
-                printf("\n  **** VISUALISASI POHON SITASI ****\n\n");
-                if (!paperList) {
-                    printf("  [INFO] Daftar paper kosong.\n");
-                    break;
+                clearScreen();
+                printf("+=================================================================+\n");
+                printf("|                    VISUALISASI POHON SITASI                     |\n");
+                printf("+=================================================================+\n\n");
+                if (!paperList) { printf("  [INFO] Daftar paper kosong.\n"); }
+                else {
+                    printf("  Membangun dan menampilkan struktur pohon, mohon tunggu...\n");
+                    TreeNode* citationTreeRoot = buildCitationTree(paperList);
+                    printTreeVisual(citationTreeRoot);
+                    freeTree(citationTreeRoot);
                 }
-                printf("  Membangun dan menampilkan struktur pohon, mohon tunggu...\n");
-                TreeNode* citationTreeRoot = buildCitationTree(paperList);
-                printTreeVisual(citationTreeRoot);
-                freeTree(citationTreeRoot);
                 break;
-
             case 4:
-                avlMenu(avlRoot, paperList);
-                break;
-
-            case 5:
-                printf("\n  **** TAMBAH PAPER KE BOOKMARK ****\n\n");
-                printf("  Masukkan ID paper yang ingin dibookmark: ");
-                scanf("%99s", id);
+                analysisMenu(avlRoot, paperList);
+                continue; 
+            case 5: {
+                int bookmarkChoice;
+                clearScreen();
+                printf("+=================================================================+\n");
+                printf("|                        MANAJEMEN BOOKMARK                       |\n");
+                printf("+=================================================================+\n\n");
+                printf("  [1] Tambah Bookmark\n");
+                printf("  [2] Tampilkan Bookmark\n");
+                printf("  [3] Simpan Bookmark ke File\n");
+                printf("  [0] Kembali ke Menu Utama\n\n");
+                printf("  >> Pilihan Anda: ");
+                scanf("%d", &bookmarkChoice);
                 clearInputBuffer();
-                {
-                    Node* found = searchPaperById(paperList, id);
-                    if (found) {
-                        push(&bookmarkStack, found->data);
-                        printf("\n  [OK] Paper '[%s]' berhasil dibookmark!\n", found->data.id);
-                    } else {
-                        printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", id);
-                    }
+                switch(bookmarkChoice) {
+                    case 1:
+                        printf("\n  Masukkan ID paper yang ingin dibookmark: ");
+                        scanf("%99s", id);
+                        clearInputBuffer();
+                        Node* found = searchPaperById(paperList, id);
+                        if (found) {
+                            push(&bookmarkStack, found->data);
+                            printf("\n  [OK] Paper '[%s]' berhasil dibookmark!\n", found->data.id);
+                        } else {
+                            printf("\n  [INFO] Paper dengan ID '%s' tidak ditemukan.\n", id);
+                        }
+                        break;
+                    case 2:
+                        printBookmarks(bookmarkStack);
+                        break;
+                    case 3:
+                        saveBookmarksToFile(bookmarkStack, "bookmark.txt");
+                        break;
+                    default:
+                        break;
                 }
                 break;
-
-            case 6:
-                printBookmarks(bookmarkStack);
-                break;
-
-            case 7:
-                printf("\n  **** SIMPAN BOOKMARK KE FILE ****\n\n");
-                saveBookmarksToFile(bookmarkStack, "bookmark.txt");
-                break;
-
+            }
             case 8:
+                clearScreen();
+                printf("+=================================================================+\n");
+                printf("|             TAMPILKAN SEMUA (URUTAN ORIGINAL)                   |\n");
+                printf("+=================================================================+\n");
                 printAllPapers(paperList);
                 break;
-            
-            case 9:
-            {
-                printf("\n  **** TAMPILKAN SEMUA PAPER (URUT TAHUN) ****\n\n");
+            case 9: {
+                clearScreen();
+                printf("+=================================================================+\n");
+                printf("|               TAMPILKAN SEMUA (URUT TAHUN)                      |\n");
+                printf("+=================================================================+\n\n");
                 DNode *dllList = convertSLLtoDLL(paperList);
                 if (!dllList) {
                     printf("  [INFO] Gagal mengkonversi ke DLL.\n");
@@ -296,7 +304,6 @@ int main() {
                 freeDLL(dllList);
             }
             break;
-            
             case 10:
                 printf("\n  Membersihkan memori sebelum keluar...\n");
                 freeList(paperList);
@@ -305,9 +312,8 @@ int main() {
                 freeAVLTree(avlRoot);
                 printf("  Semua memori telah dibebaskan. Sampai jumpa!\n\n");
                 return 0;
-
             default:
-                printf("\n  [ERROR] Pilihan tidak valid. Harap pilih nomor menu antara 1-10.\n");
+                printf("\n  [ERROR] Pilihan tidak valid.\n");
         }
 
         if (choice != 10) {
