@@ -112,14 +112,14 @@ int main() {
         printf("+==============================================================================+\n\n");
 
         printf("--- Fitur Utama ---\n");
-        printf("  [1] Cari Paper Berdasarkan ID   | Metode: Pencarian Linear (O(n))\n");
+        printf("  [1] Cari Paper Berdasarkan ID   | Metode: SLL\n");
         printf("  [2] Dapatkan Rekomendasi        | Berdasarkan Sitasi (Queue)\n");
-        printf("  [3] Visualisasi Jejaring Sitasi | Lihat Hubungan Antar Paper (General Tree)\n\n");
+        printf("  [3] Visualisasi Jejaring Sitasi | Lihat Hubungan Antar Paper (Tree)\n\n");
 
         printf("--- Manajemen & Tampilan Data ---\n");
         printf("  [4] Manajemen Bookmark          | Kelola paper pilihan (Stack)\n");
         printf("  [5] Tampilkan Semua (Urutan File)| Metode: SLL\n");
-        printf("  [6] Tampilkan Semua (Urut Tahun)| Metode: DLL + Bubble Sort\n\n");
+        printf("  [6] Tampilkan Semua (Urut Tahun)| Metode: DLL\n\n");
         
         printf("--- Sistem ---\n");
         printf("  [7] Keluar\n\n");
