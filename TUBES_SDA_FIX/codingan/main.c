@@ -84,7 +84,7 @@ int main() {
 
     printf("Mempersiapkan sistem...\n");
     printf("  - Memuat data dari file... ");
-    Node* paperList = loadDataFromFile("data.txt");
+    Node* paperList = loadDataFromFile("TUBES_SDA_FIX/dataset/data.txt");
     if (!paperList) {
         printf("GAGAL.\n");
         printf("  Pastikan file 'data.txt' ada di direktori yang sama.\n");
