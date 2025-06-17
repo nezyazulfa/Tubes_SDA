@@ -9,7 +9,6 @@
 - **Nezya Zulfa Fauziah** (241511085) - [@nezyazulfa](https://github.com/nezyazulfa)
 - **Muhammad Raihan Abubakar** (241511084) - [@hanzz78](https://github.com/hanzz78)
 - **Muhammad Brata Hadinata** (241511082) - [@MuhammadBrataH](https://github.com/MuhammadBrataH)
-- **Ahmad Habib Mutaqqin** (241511065)
 
 ### 📌 Dosen Pengampu: **Ade Hodijah**
 
