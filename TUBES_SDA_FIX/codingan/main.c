@@ -35,6 +35,7 @@ void bookmarkMenu(StackNode** bookmarkStack, Node* paperList) {
     printf("  [1] Tambah Bookmark Baru\n");
     printf("  [2] Tampilkan Semua Bookmark\n");
     printf("  [3] Simpan Bookmark ke File (bookmark.txt)\n");
+    printf("  [4] Hapus Bookmark\n");
     printf("  [0] Kembali ke Menu Utama\n\n");
     printf("  >> Pilihan Anda: ");
 
@@ -65,6 +66,14 @@ void bookmarkMenu(StackNode** bookmarkStack, Node* paperList) {
             break;
         case 3:
             saveBookmarksToFile(*bookmarkStack, "bookmark.txt");
+            break;
+        case 4:
+            if (!*bookmarkStack) {
+                printf("\n  [INFO] Bookmark masih kosong.\n");
+            } else {
+                Paper removed = pop(bookmarkStack);
+                printf("\n  [OK] Bookmark dengan ID '%s' berhasil dihapus dari daftar.\n", removed.id);
+            }
             break;
         case 0:
             return;

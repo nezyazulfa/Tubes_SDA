@@ -1,0 +1,3 @@
+ca85b31a3d3a9584e89a49e3b3db0cd93d424208|Tumor necrosis factor inhibitors for rheumatoid arthritis.|b75ef2ac8493c7560e86686fa72046b446fd4613|D L Scott, G H Kingsley|2006
+dcbecf34d54f9a2054b550128d2fa262df6a70e4|Prevalence of symptomatic hand osteoarthritis and its impact on functional status among the elderly: The Framingham Study.|3dbe49c447e13673f6af17844b73de8a9fd042cb|Yuqing  Zhang, Jingbo  Niu, Margaret  Kelly-Hayes, Christine E Chaisson, Piran  Aliabadi, David T Felson|2002
+9260b574d775ab11ea243ab8bf314f5c1368601e|Clinical, radiologic, demographic, and occupational aspects of hand osteoarthritis in the elderly.|3dbe49c447e13673f6af17844b73de8a9fd042cb|D  Caspi, G  Flusser, I  Farber, J  Ribak, A  Leibovitz, B  Habot, M  Yaron, R  Segal|2001

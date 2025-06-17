@@ -36,28 +36,28 @@
 ## 📥 Instalasi & Cara Menjalankan
 ### 1️⃣ Clone Repository
 ```bash
-git clone https://github.com/wyandhanupapoy/Paper-Citation-Manager.git
-cd Paper-Citation-Manager
+git clone https://github.com/nezyazulfa/Tubes_SDA.git
+cd TUBES_SDA
 ```
 
 ### 2️⃣ Compile Program
-```bash
-gcc -o paper_manager main.c -lm
+```bass
+gcc TUBES_SDA_FIX/codingan/*.c -o program -Wall -g
 ```
 
 ### 3️⃣ Jalankan Aplikasi
 ```bash
-./paper_manager
+./program
 ```
 
 ## 📄 Format Dataset
 Dataset disimpan dalam file `data.txt` dengan format sebagai berikut:
 ```
-id,title,incitation,author,year
+id|title|incitation|author|year
 ```
 Contoh:
 ```
-P001,Implementasi Algoritma Sorting,P000,John Doe,2020
+P001|Implementasi Algoritma Sorting|P000|John Doe|2020
 ```
 
 ## 📜 Lisensi
